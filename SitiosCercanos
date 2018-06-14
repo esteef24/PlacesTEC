@@ -1,0 +1,50 @@
+ private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {                                             
+        // TODO add your handling code here:
+        String localizacion = txtLocalizacion.getText();
+        String radio = txtRadio.getText();
+        String sitioInteres = cbxSitiosInteres.getSelectedItem().toString();
+        String latitud = "";
+        String longitud = "";
+        if (sitioInteres.equals("Restaurantes")){
+            sitioInteres = "restaurant";
+        }
+        if (sitioInteres.equals("Cines")){
+            sitioInteres = "movie_theater";
+        }
+        if (sitioInteres.equals("Doctores")){
+            sitioInteres = "doctor";
+        }
+        if (sitioInteres.equals("Museos")){
+            sitioInteres = "museum";
+        }
+        if (sitioInteres.equals("Bares")){
+            sitioInteres = "bar";
+        }
+            try {
+ 
+                Point2D.Double resultado=ObjGeocoding.getCoordinates(localizacion);
+                latitud = String.valueOf(resultado.x);
+                longitud = String.valueOf(resultado.y);
+               
+            } catch (Exception ex) {
+                System.out.println("Error");
+            }
+        client = new GooglePlaces("AIzaSyCdnsMrGYyJ8LCwa0QVY8YZGc2kI8WRIgA");
+           
+        try {
+            places = client.getNearbyPlaces(Double.parseDouble(latitud), Double.parseDouble(longitud), Double.parseDouble(radio), GooglePlaces.MAXIMUM_RESULTS, Param.name("type").value(sitioInteres));
+            DefaultListModel modelo = new DefaultListModel();
+            int i = 0;
+            for(Place lugar : places) {
+                modelo.add(i, lugar.getName());
+            }
+            lstSitiosCercanos.setModel(modelo);
+        }catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "No hay comercios disponibles.", "Error", JOptionPane.INFORMATION_MESSAGE);
+        }
+        
+        
+        
+    }                                            
+    public GooglePlaces client;
+    public List<Place> places;
